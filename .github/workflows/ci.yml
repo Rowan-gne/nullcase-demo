@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      diagnose-tests:
+        description: "Test to diagnose even if it passes, e.g. tests/test_registry.py::test_first_user_gets_id_1"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: pytest with NullCase diagnosis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      # Runs pytest with the NullCase plugin. Tests that fail (and any named
+      # above) are re-run under controlled perturbations; the diagnosis goes to
+      # the job summary, a file annotation and nullcase-diagnoses.json.
+      - name: Run tests and diagnose failures
+        uses: Rowan-gne/NullCase/packages/upload-action@83d950d361e7713fe99570ca4b6b12edeb882191 # main, before v0.1.0
+        with:
+          diagnose: failed
+          diagnose-tests: ${{ inputs.diagnose-tests }}
+          plugin-source: git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=packages/pytest-plugin
+          sandbox-source: git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=sandbox
+
+      - name: Keep the results and diagnoses
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nullcase
+          path: |
+            nullcase-results.jsonl
+            nullcase-diagnoses.json
+          if-no-files-found: ignore

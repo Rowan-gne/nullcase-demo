@@ -1,0 +1,53 @@
+name: Flaky catalog
+
+# Diagnoses one of the seeded flaky tests in flaky_catalog/ on demand. The
+# catalog is expected to have failures; this workflow shows what NullCase
+# makes of each one.
+on:
+  workflow_dispatch:
+    inputs:
+      test:
+        description: Catalog test to diagnose
+        type: choice
+        options:
+          - flaky_catalog/test_hash.py::test_unique_tags_keeps_first_seen_order
+          - flaky_catalog/test_network.py::test_example_dot_com_is_up
+          - flaky_catalog/test_timezone.py::test_invoice_is_dated_today
+          - flaky_catalog/test_concurrency.py::test_export_report[acme]
+          - flaky_catalog/test_timing.py::test_cache_warmup_finishes_quickly
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: diagnose ${{ inputs.test }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run the catalog and diagnose the chosen test
+        uses: Rowan-gne/NullCase/packages/upload-action@83d950d361e7713fe99570ca4b6b12edeb882191 # main, before v0.1.0
+        with:
+          pytest-args: flaky_catalog
+          diagnose-tests: ${{ inputs.test }}
+          plugin-source: git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=packages/pytest-plugin
+          sandbox-source: git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=sandbox
+
+      - name: Keep the results and diagnoses
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nullcase
+          path: |
+            nullcase-results.jsonl
+            nullcase-diagnoses.json
+          if-no-files-found: ignore
