@@ -5,12 +5,18 @@ A small Python service with a flaky test, used to demonstrate
 flaky pytest test is flaky by re-running it under controlled conditions and
 comparing failure rates.
 
+<p align="center">
+  <img src="assets/fix-loop.svg" width="880" alt="From a flaky CI failure to a verified fix: CI fails because test order is shuffled; NullCase diagnoses it by experiment (order 13/20 against a baseline of 0/20, so order_dependent, with a repro confirmed 3 of 3); an AI model proposes a patch; it is rejected if it skips the test, weakens assertions or switches off the experiment; the same seeds are re-run on the patch and it is accepted only at 0 failures with no new suite failures; a pull request carries the before/after evidence.">
+</p>
+
 ## The incident
 
 `tests/test_registry.py::test_first_user_gets_id_1` passes when you run the
-suite in file order. It fails in most CI runs, because CI shuffles the test
-order (pytest-randomly) and the registry in `src/demo_service/registry.py`
-keeps its users in module-level state. Whichever test registers first gets ID 1.
+suite in file order. It fails whenever another registry test runs first,
+because the registry in `src/demo_service/registry.py` keeps its users in
+module-level state and whichever test registers first gets ID 1. CI shuffles
+the test order (pytest-randomly), so it fails in some runs and not others; in
+10 shuffled runs on a laptop it failed 9 times.
 
 ## What CI does
 
