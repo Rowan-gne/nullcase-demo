@@ -51,10 +51,20 @@ diagnoses one on demand.
 
 ## Fix pull requests
 
-Fixes for diagnosed tests may arrive as pull requests from `nullcase-fix`.
-Each one states the diagnosis and the before/after results of re-running the
-same experiments on the patched code. Like any other change, it's merged only
-if CI passes.
+NullCase's service opens fixes as draft pull requests from `nullcase-fix/`
+branches. Each one states the diagnosis, the before/after results of
+re-running the same experiments on the patched code, and which model proposed
+the patch. Like any other change, it's merged only if CI passes.
+
+The first is [#1](https://github.com/Rowan-gne/nullcase-demo/pull/1), for the
+incident above, opened on 2026-09-28. `claude-sonnet-5-5` proposed an autouse
+fixture that clears the registry before and after every test. On the patched
+code, the order experiment went from 13 failures in 20 runs to 0, and 120 of
+120 runs passed. It stays a draft so the incident can still be reproduced.
+
+<p align="center">
+  <img src="assets/draft-pr.svg" width="880" alt="Draft pull request #1, opened by NullCase: the same experiments re-run on the patched code show order failures dropping from 13 of 20 to 0 of 20 with every other experiment at 0 of 20; the repro passes 5 of 5; three anti-cheat checks are ticked; the provenance line says the patch was proposed by claude-sonnet-5-5 for $0.0095 and accepted by the NullCase battery, not by the model; the CI check passes.">
+</p>
 
 ## Run it locally
 
