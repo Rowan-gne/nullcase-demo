@@ -33,12 +33,12 @@ jobs:
       # above) are re-run under controlled perturbations; the diagnosis goes to
       # the job summary, a file annotation and nullcase-diagnoses.json.
       - name: Run tests and diagnose failures
-        uses: Rowan-gne/NullCase/packages/upload-action@83d950d361e7713fe99570ca4b6b12edeb882191 # main, before v0.1.0
+        uses: Rowan-gne/NullCase/packages/upload-action@3c0bd7e7df9f6bf7656f8d04225172d2915f6ffb # main, before v0.1.0
         with:
           diagnose: failed
           diagnose-tests: ${{ inputs.diagnose-tests }}
-          plugin-source: git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=packages/pytest-plugin
-          sandbox-source: git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=sandbox
+          plugin-source: git+https://github.com/Rowan-gne/NullCase@3c0bd7e7df9f6bf7656f8d04225172d2915f6ffb#subdirectory=packages/pytest-plugin
+          sandbox-source: git+https://github.com/Rowan-gne/NullCase@3c0bd7e7df9f6bf7656f8d04225172d2915f6ffb#subdirectory=sandbox
 
       - name: Keep the results and diagnoses
         if: always()

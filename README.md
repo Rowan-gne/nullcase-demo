@@ -64,8 +64,8 @@ Requires Python 3.11+.
 python -m venv .venv
 source .venv/bin/activate        # Windows (Git Bash): source .venv/Scripts/activate
 pip install -r requirements-dev.txt
-pip install "git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=packages/pytest-plugin" \
-            "git+https://github.com/Rowan-gne/NullCase@83d950d361e7713fe99570ca4b6b12edeb882191#subdirectory=sandbox"
+pip install "git+https://github.com/Rowan-gne/NullCase@3c0bd7e7df9f6bf7656f8d04225172d2915f6ffb#subdirectory=packages/pytest-plugin" \
+            "git+https://github.com/Rowan-gne/NullCase@3c0bd7e7df9f6bf7656f8d04225172d2915f6ffb#subdirectory=sandbox"
 pytest                                               # fails or passes depending on the shuffled order
 nullcase-battery tests/test_registry.py::test_first_user_gets_id_1
 ```
