@@ -3,4 +3,4 @@
 
 def unique_tags(tags: list[str]) -> list[str]:
     """Drop duplicate tags."""
-    return list(set(tags))
+    return list(dict.fromkeys(tags))
