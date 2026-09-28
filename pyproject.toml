@@ -1,0 +1,10 @@
+[project]
+name = "demo-service"
+version = "0.1.0"
+description = "A small service with a flaky test suite, used to demonstrate NullCase"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+# CI runs tests/ only; flaky_catalog/ is run on demand by its own workflow.
+testpaths = ["tests"]

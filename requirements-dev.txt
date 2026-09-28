@@ -1,0 +1,3 @@
+pytest==9.1.1
+# Shuffles test order on every run, as many real CI setups do.
+pytest-randomly==5.0.0
