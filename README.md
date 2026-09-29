@@ -1,6 +1,6 @@
 # nullcase-demo
 
-A small Python service with a flaky test, used to demonstrate
+A small Python service with flaky tests, used to demonstrate
 [NullCase](https://github.com/Rowan-gne/NullCase). NullCase finds out *why* a
 flaky pytest test is flaky by re-running it under controlled conditions and
 comparing failure rates.
@@ -17,6 +17,22 @@ because the registry in `src/demo_service/registry.py` keeps its users in
 module-level state and whichever test registers first gets ID 1. CI shuffles
 the test order (pytest-randomly), so it fails in some runs and not others; in
 10 shuffled runs on a laptop it failed 9 times.
+
+## A second incident: a cached setting
+
+`tests/test_pricing.py::test_prices_default_to_usd` checks that prices are
+shown in US dollars by default. It passes on its own and in file order.
+
+It fails whenever one of the currency tests in the same file runs first:
+- `currency()` in `src/demo_service/settings.py` caches its value;
+- those tests clear the cache before setting `DEMO_CURRENCY`, but not
+  afterwards;
+- so the next test still sees EUR or GBP.
+
+It was added on 2026-09-29 as a new case for NullCase's whole loop, from the
+diagnosis to a model's proposed fix. See
+[NullCase's README](https://github.com/Rowan-gne/NullCase#where-the-ai-comes-in)
+for what happened.
 
 ## What CI does
 
